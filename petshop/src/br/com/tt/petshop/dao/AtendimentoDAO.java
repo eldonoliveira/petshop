@@ -17,7 +17,7 @@ public class AtendimentoDAO extends GenericDAO {
 
 	private static final long serialVersionUID = 1L;
 	
-	public List<Atendimento> listarPorIntervalo( Date inicio, Date fim){
+	public List<Atendimento> listarPorIntervalo( Date inicio, Date fim, Long idCliente){
 		
 //		getHibernateSession().evict(arg0);
 //		getHibernateSession().saveOrUpdate(arg0);
@@ -32,13 +32,19 @@ public class AtendimentoDAO extends GenericDAO {
 		
 		Criteria cr = getHibernateSession().createCriteria(Atendimento.class);
 		cr.createAlias("unidade", "u");
+		cr.createAlias("cliente", "c");
 		cr.add(Restrictions.between("dataAgendamento", inicio, fim));
 		cr.add(Restrictions.isNotNull("unidade"));
+		cr.add(Restrictions.eq("c.id", idCliente));
 //		cr.add(Restrictions.ilike("u.nome", "Target", MatchMode.ANYWHERE)); /* Equivalente ao FETCH */
 		
 		cr.addOrder(Order.asc("dataAgendamento"));
 		
 		return cr.list();
+	}
+	
+	public void salvar(Atendimento atendimento){
+		getHibernateSession().saveOrUpdate(atendimento);
 	}
 
 }

@@ -18,8 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @NamedQueries({
-	@NamedQuery(name="cliente.list", query="select c from Cliente c join fetch c.unidade left join fetch c.atendimentos"),
-	@NamedQuery(name="cliente.findByNome", query="select c from Cliente c join fetch c.unidade left join fetch c.atendimentos where c.nome like :nome ")
+	@NamedQuery(name="cliente.list", query="select distinct c from Cliente c join fetch c.unidade left join fetch c.atendimentos"),
+	@NamedQuery(name="cliente.findByNome", query="select distinct c from Cliente c join fetch c.unidade left join fetch c.atendimentos where c.nome like :nome ")
 	}
 )
 

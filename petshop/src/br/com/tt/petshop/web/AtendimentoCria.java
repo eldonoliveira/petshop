@@ -2,6 +2,9 @@ package br.com.tt.petshop.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,7 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import br.com.tt.petshop.dao.AtendimentoDAO;
 import br.com.tt.petshop.dao.ClienteDAO;
+import br.com.tt.petshop.model.Atendimento;
 import br.com.tt.petshop.model.Cliente;
 
 @WebServlet("/AtendimentoCria")
@@ -35,7 +40,7 @@ public class AtendimentoCria extends HttpServlet {
 		w.write("<select name='cliente_id'>");
 		List<Cliente> lista = clienteDAO.list();
 		for (Cliente cliente : lista){
-			w.write("<option id='");
+			w.write("<option value='");
 			w.write(cliente.getId()+"'>");
 			w.write(cliente.getNome());
 			w.write("</option>");
@@ -48,10 +53,31 @@ public class AtendimentoCria extends HttpServlet {
 		w.write("</form>");
 		w.write("</body></html>");
 	}
-
+	
+	@Inject AtendimentoDAO atendimentoDAO;
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		String clienteId = request.getParameter("cliente_id");
+		String dataAgendamento = request.getParameter("data_agendamento");
+		
+		Cliente clienteSelecionado = clienteDAO.findById(Long.parseLong(clienteId));
+		
+		Atendimento novoAtendimento = new Atendimento();
+		novoAtendimento.setCliente(clienteSelecionado);
+		novoAtendimento.setDataAgendamento(converteParaDate(dataAgendamento));
+		novoAtendimento.setUnidade(clienteSelecionado.getUnidade());
+		
+		atendimentoDAO.salvar(novoAtendimento);
+		
 		doGet(request, response);
+	}
+	
+	public Date converteParaDate(String entrada){
+		try {
+			return new SimpleDateFormat("yyyy-MM-dd").parse(entrada);
+		} catch (ParseException e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
